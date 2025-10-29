@@ -96,7 +96,9 @@ void print_tzs(std::vector<std::string> tz_string_list) {
   // https://en.cppreference.com/w/cpp/chrono/time_point/time_since_epoch .
   auto unix_time_s = std::chrono::duration_cast<std::chrono::seconds>(
     current_time.time_since_epoch()).count();
-  std::cout << "Unix Time: " <<  unix_time_s << "\n";
+  std::cout << "Unix Time: " <<  unix_time_s << "\033[K\n";
+    // \033[K clears out any lingering additional text to the right
+    // of each line.
   // Printing out all time zone data:
   for (int i = 0; i < tz_string_list.size(); i++) {
     std::string tz_name_str = tz_string_list[i];
@@ -113,22 +115,17 @@ void print_tzs(std::vector<std::string> tz_string_list) {
     int tz_time_hours = std::stoi(tz_time_str.substr(0, 2));
     std::string time_color = "\033[32m";
     if ((tz_time_hours < 8) || (tz_time_hours >= 20)) 
-      {time_color = "\033[35m";}
+      {time_color = "\033[36m";}
     std::cout << tz_string_list[i] << ": " << time_color
-    << tz_time_str << "\033[0m" << "\n";
-              // We could also use "\033[K\n" to clear out any 
-              // text to the right of each line, but this should
-              // rarely be necessary--and the user could get the same
-              // result by just restarting the program.
+    << tz_time_str << "\033[0m" << "\033[K\n";
   }
 }
 
 int main() { 
   // Clearing the screen:
   // (For reference, see https://en.wikipedia.org/wiki/ANSI_escape_code)
-
-  std::cout << "\033[1;1H";
-  std::cout << "\033[J";
+    std::cout << "\033[1;1H";
+    std::cout << "\033[J";
   while (true)
   {
     // We'll want to next run the script as close to the top of
@@ -149,18 +146,13 @@ int main() {
     auto next_second = std::chrono::floor<std::chrono::seconds>(
     std::chrono::system_clock::now()) + std::chrono::seconds(1);
     std::this_thread::sleep_until(next_second);
-    // Returning to the top of the console:
-    std::cout << "\033[1;1H";
+    
     print_tzs(tz_string_list); 
-  // At this point, we could also enter "\033[J" to clear out any 
-  // text below these lines, but this would only be necessary if 
-  // the terminal were resized--and the user could also achieve this
-  // same effect simply by restarting the program.
-      
-    // std::cout << "\033[J";
+    // Clearing out the rest of the screen (which may be necessary
+    // if the window had been resized):
+    std::cout << "\033[J";
+    // Returning to the top of the terminal:
+    std::cout << "\033[1;1H";
 
-
-    // std::this_thread::sleep_until(
-    // std::chrono::system_clock::now() + std::chrono::seconds(1));
   }
 }
