@@ -13,10 +13,16 @@ This simple C++ command-line-interface program displays the current time and dat
 The source code makes extensive use of [ANSI escape codes to control](https://en.wikipedia.org/wiki/ANSI_escape_code) the color and display of each time zone.
 
 
-## Setup notes
+## Setup instructions
 
 1. Compile the program, either using CMake or directly via a compiler like G++. (I have only tested it on Linux, but it should work on Windows and Mac as well--perhaps with a few tweaks.)
 
-2. Update the tz_list.csv file as needed in order to specify which time zones you would like to display. Within this CSV file, the first row shows time zone database entries ([available here](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones), and the second row shows the labels you'd like to assign to those entries. (These labels can include spaces, but they must not include commas.) World times will be displayed in the order that they're entered within this database. 
+    (Note: the code expects the executable to be located in a /build subfolder and **not** the project's root folder!)
+
+2. Update the tz_list.csv file as needed in order to specify which time zones you would like to display. (You can choose any number of time zones as long as you specify at least one; however, the output may not display correctly if there's not enough space on your monitor to show all of them.) 
+
+    Within this CSV file, the first row shows time zone database entries ([available here](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones), and the second row shows the labels you'd like to assign to those entries. (These labels can include spaces, but they must not include commas.) World times will be displayed in the order that they're entered within this database. 
 
     [This map](https://upload.wikimedia.org/wikipedia/commons/8/88/World_Time_Zones_Map.png) can help you identify which time zones you might want to add to your program.
+
+3. Run the program by navigating to the /build folder and then executing it from there. 
