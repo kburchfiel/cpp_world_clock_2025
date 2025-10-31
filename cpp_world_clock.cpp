@@ -15,7 +15,7 @@ Released under the MIT License
 std::string
 get_tz_time(const std::string &tz_string,
             const std::chrono::time_point<std::chrono::system_clock,
-                                          std::chrono::seconds> &current_time) {
+                              std::chrono::seconds> &current_time) {
   // Note: I found the actual type of system_clock::now() from
   // https://en.cppreference.com/w/cpp/chrono/system_clock/now .
 
@@ -54,11 +54,17 @@ void print_tzs(const std::vector<std::vector<std::string>> &tz_vec) {
   auto unix_time_s = std::chrono::duration_cast<std::chrono::seconds>(
                          current_time.time_since_epoch())
                          .count();
-  std::cout << "Unix Time: " << unix_time_s << "\033[K\n";
+  // Printing out all time zone data:
+  // Creating a single string that can store all time zones:
+  // This approach *should* reduce the likelihood that the 
+  // terminal's cursor will 'flicker' from quickly printing
+  // out time zones line by line.
+  std::string tz_display = ""; 
+
+  tz_display += "Unix Time: " + std::to_string(unix_time_s) + "\033[K\n";
   // \033[K clears out any lingering additional text to the right
   // of each line.
 
-  // Printing out all time zone data:
 
   for (const std::vector<std::string> &tz_vec_entry : tz_vec) {
 
@@ -79,13 +85,19 @@ void print_tzs(const std::vector<std::vector<std::string>> &tz_vec) {
     if ((tz_time_hours < 8) || (tz_time_hours >= 20)) {
       time_color = "\033[36m";
     }
-    std::cout << tz_vec_entry[1] << ": " << time_color << tz_time_str
-              << "\033[0m" << "\033[K\n";
+
+    
+    tz_display += tz_vec_entry[1] + ": " + time_color + tz_time_str
+              + "\033[0m\033[K\n";
   }
-  // For debugging: (This line allows you to see how quickly these
-  // lines get printed to the console.)
-  // std::cout << "Current UTC time: " << std::chrono::system_clock::now() <<
-  // "\n";
+
+    // Clearing out the rest of the screen (which may be necessary
+    // if the window had been resized), then returning to the 
+    // top of the terminal:
+    tz_display += "\033[J\033[1;1H";
+
+  std::cout << tz_display;
+
 }
 
 int main() {
@@ -144,12 +156,22 @@ int main() {
                            std::chrono::system_clock::now()) +
                        std::chrono::seconds(1);
     std::this_thread::sleep_until(next_second);
-
+    // The following timing code, which I've since commented out, 
+    // allowed me to check how long it took to render a new set of
+    // times. On my computer, I tended to get render times
+    // around 500-600 microseconds (e.g. 0.5-0.6 milliseconds),
+    // but this time might be substantially slower or faster on your
+    // own machine.
+    // auto start_time = std::chrono::high_resolution_clock::now();
     print_tzs(tz_vec);
-    // Clearing out the rest of the screen (which may be necessary
-    // if the window had been resized):
-    std::cout << "\033[J";
-    // Returning to the top of the terminal:
-    std::cout << "\033[1;1H";
+    // auto end_time = std::chrono::high_resolution_clock::now();
+    // The following runtime calculation is based on p. 587 of
+    // Programming: Principles and Practice Using C++ (3rd Edition)
+    // by Bjarne Stroustrup.
+    // auto run_time = std::chrono::duration_cast<
+    // std::chrono::microseconds>(end_time - start_time).count();
+    // std::cout << "Render time: " << run_time 
+    // << " microseconds\t";
+
   }
 }

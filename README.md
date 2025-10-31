@@ -17,9 +17,9 @@ The source code makes extensive use of [ANSI escape codes to control](https://en
 
 1. Go to [the Releases page](https://github.com/kburchfiel/cpp_world_clock_2025/releases) and download, then unzip, the latest release for your operating system (if available). I've only uploaded a release for Linux x86-64 systems so far, but I hope to add Windows and Mac releases as well in the near future. If you'd like to use the program right away for your own OS, try compiling it (see Compilation instructions section below).
 
-2. Update the tz_list.csv file as needed in order to specify which time zones you would like to display. (You can choose any number of time zones as long as you specify at least one; however, the output may not display correctly if there's not enough space on your monitor to show all of them.) 
+2. Update the tz_list.csv file as needed in order to specify which time zones you would like to display. (You can choose any number of time zones as long as you specify at least one; however, the output may not display correctly if there's not enough space on your monitor to show all of them.)
 
-    Within this CSV file, the first row shows time zone database entries ([available here](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones), and the second row shows the labels you'd like to assign to those entries. (These labels can include spaces, but they must not include commas.) World times will be displayed in the order that they're entered within this database. 
+    Within this CSV file, the first column shows time zone database entries ([available here](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones), and the second column shows the labels you'd like to assign to those entries. (These labels can include spaces, but they must not include commas.) World times will be displayed in the order that they're entered within this database. 
 
     [This map](https://upload.wikimedia.org/wikipedia/commons/8/88/World_Time_Zones_Map.png) can help you identify which time zones you might want to add to your program.
 
