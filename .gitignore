@@ -3,3 +3,5 @@
 /releases
 .jupyter
 /new_build_test
+cpp_world_clock.s
+test_gpp_build_script.sh
