@@ -27,6 +27,22 @@ The source code makes extensive use of [ANSI escape codes to control](https://en
 
 ## Compilation instructions
 
-1. To compile the program, you can either use CMake (with the provided CMakeLists.txt file) or a compiler of your choice. As noted earlier, I was able to compile it on Linux and Windows, but not MacOS.
+To compile the program, you can use CMake with the included CMakeLists.txt file. Simply create a build folder within your project's root folder; navigate to that folder within your terminal; and run:
 
-    (Note: the code expects the executable to be located in a /build subfolder and **not** the project's root folder!)
+`cmake ..`
+
+`cmake --build .` (Don't forget the period at the end!)
+
+Alternatively, you can create an executable using a compiler of your choice. For instance, to compile the program with g++, navigate to the project's root folder, make a build directory, and then run: 
+
+`g++ cpp_world_clock.cpp -std=c++23 -o build/cwc25`
+
+The Clang command is almost identical:
+
+`clang++ cpp_world_clock.cpp -std=c++23 -o build/cwc25`
+
+(Note: the code expects the executable to be located in a /build subfolder and **not** the project's root folder.)
+
+As noted earlier, I was able to compile it on Linux and Windows, but not MacOS. I might try using CMake to cross-compile it for MacOS within Linux at some point.
+
+    
