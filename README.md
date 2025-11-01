@@ -15,7 +15,7 @@ The source code makes extensive use of [ANSI escape codes to control](https://en
 
 ## Setup instructions
 
-1. Go to [the Releases page](https://github.com/kburchfiel/cpp_world_clock_2025/releases) and download, then unzip, the latest release for your operating system (if available). I've only uploaded a release for Linux x86-64 systems so far, but I hope to add Windows and Mac releases as well in the near future. If you'd like to use the program right away for your own OS, try compiling it (see Compilation instructions section below).
+1. Go to [the Releases page](https://github.com/kburchfiel/cpp_world_clock_2025/releases) and download, then unzip, the latest release for your operating system (if available). [Note: I encountered issues with compiling this program for MacOS, as the `zoned_time` function wasn't recognized by the laptop's version of Clang/G++.]
 
 2. Update the tz_list.csv file as needed in order to specify which time zones you would like to display. (You can choose any number of time zones as long as you specify at least one; however, the output may not display correctly if there's not enough space on your monitor to show all of them.)
 
@@ -27,6 +27,6 @@ The source code makes extensive use of [ANSI escape codes to control](https://en
 
 ## Compilation instructions
 
-1. To compile the program, you can either use CMake (with the provided CMakeLists.txt file) or a compiler of your choice. (I have only tested the program out on Linux, but it should work on Windows and Mac as well--perhaps with a few tweaks.)
+1. To compile the program, you can either use CMake (with the provided CMakeLists.txt file) or a compiler of your choice. As noted earlier, I was able to compile it on Linux and Windows, but not MacOS.
 
     (Note: the code expects the executable to be located in a /build subfolder and **not** the project's root folder!)
