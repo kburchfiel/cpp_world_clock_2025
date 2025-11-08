@@ -13,6 +13,103 @@ Released under the MIT License
 #include <thread>
 #include <vector>
 
+  std::map<std::string, std::string> csv_to_map(
+    std::string csv_file_path)
+  {
+
+    // This function converts a CSV file to a map with string-based
+    // keys and values.
+    // It assumes that the CSV file has only two columns; that
+    // it contains a header; that values are separated by commas;
+    // and that no items themselves contain commas. 
+
+  // Note: much of this code was based on the examples
+  // found at https://en.cppreference.com/w/cpp/string/basic_string/getline .
+
+  std::ifstream csv_ifstream{csv_file_path};
+
+
+  std::map<std::string, std::string> csv_map;
+
+  // Retrieving each line within the .csv file:
+
+  int line_count = 0;
+  for (std::string row_string;
+       std::getline(csv_ifstream, row_string);) {
+
+    // Parsing each individual line (other than the header, which 
+    // will get skipped):
+    if (line_count != 0) {
+      std::istringstream row_pair{row_string};
+
+      int field_index = 0; // This value will help us differentiate
+      // between configuration variables (whose field_index value
+      // will be 0) and values (whose field_index value will be 1).
+      // Defining variables that will store the configuration
+      // info within the current line:
+      std::string map_key = "";
+      std::string map_value = "";
+      for (std::string item;
+           std::getline(row_pair, 
+            item, ',');) {
+        if (field_index == 0) {
+          map_key = item;
+        }
+        if (field_index == 1) {
+          map_value = item;
+        }
+        field_index++;
+      }
+      csv_map[map_key] = map_value;
+    }
+    line_count++;
+  }
+
+return csv_map;
+}
+
+std::vector<std::vector<std::string>> csv_to_vector(
+  std::string csv_file_path)
+  {
+  // This function converts a CSV file to a vector of vectors of 
+  // strings. This function will be a better fit than csv_to_map()
+  // for CSV files that have more than two columns, *or* when
+  // it's important that the order of the rows be maintained. 
+  // As with csv_to_map(), this function assumes that the .csv file
+  // contains a header; that values are separated by commas;
+  // and that no items themselves contain commas. 
+
+// Note: much of this code was based on the examples
+// found at https://en.cppreference.com/w/cpp/string/basic_string/getline .
+
+  std::vector<std::vector<std::string>> csv_vector;
+
+  std::ifstream csv_ifstream{csv_file_path};
+
+  int line_count = 0;
+  for (std::string row_string; std::getline(
+    csv_ifstream, row_string);) {
+
+    if (line_count != 0) {
+      std::istringstream row_values{row_string};
+
+      std::vector<std::string> row_vector{};
+      for (std::string item; std::getline(
+        row_values, item, ',');) {
+        row_vector.push_back(item);
+      }
+      csv_vector.push_back(row_vector);
+    }
+
+    line_count++;
+  }    
+
+  return (csv_vector);
+  }
+
+
+
+
 std::string
 get_tz_time(const std::string &tz_string,
             const std::chrono::time_point<std::chrono::system_clock,
@@ -244,124 +341,26 @@ int main() {
   // time zone and config files--and to try out different
   // config options for the same set of time zones, or vice versa.)
 
+  // The following map will store two filenames, one for our
+  // time zone list, and another for our configuration files.
   // After reading in the time zone and config filenames,
   // the script will then parse the data contained within those two
   // files.
 
-  // Note: much of this input code was based on the examples
-  // found at https://en.cppreference.com/w/cpp/string/basic_string/getline .
-
-  std::ifstream config_files{"../config/cwc_config.csv"};
-
-  // The following map will store two filenames, one for our
-  // time zone list, and another for our configuration files.
-  std::map<std::string, std::string> config_file_map;
-
-  // Retrieving each line within the .csv file:
-
-  int line_count = 0;
-  for (std::string config_list_pair;
-       std::getline(config_files, config_list_pair);) {
-
-    // Discarding the header:
-
-    if (line_count != 0) {
-      std::istringstream config_list_pair_inputs{config_list_pair};
-
-      int field_index = 0; // This value will help us differentiate
-      // between configuration variables (whose field_index value
-      // will be 0) and values (whose field_index value will be 1).
-      // Defining variables that will store the configuration
-      // info within the current line:
-      std::string map_key = "";
-      std::string map_value = "";
-      for (std::string item;
-           std::getline(config_list_pair_inputs, 
-            item, ',');) {
-        if (field_index == 0) {
-          map_key = item;
-        }
-        if (field_index == 1) {
-          map_value = item;
-        }
-        field_index++;
-      }
-      config_file_map[map_key] = map_value;
-    }
-    line_count++;
-  }
-
-  std::ifstream config_list_file{"../config/" 
-    + config_file_map["config_list"]};
+  std::map<std::string, std::string> config_file_map = csv_to_map(
+    "../config/cwc_config.csv");
 
   // Parsing the active configuration file:
-
-  // (Note: this script could be refactored to avoid duplicating the
-  // CSV parsing code, but it's quite late at night right now
-  // so I might try that another time. :)
-
-  std::map<std::string, std::string> config_map;
-
-  // Retrieving each line within the .csv file:
-
-  line_count = 0;
-  for (std::string config_list_pair;
-       std::getline(config_list_file, config_list_pair);) {
-
-    // Discarding the header:
-
-    if (line_count != 0) {
-      std::istringstream config_list_pair_inputs{config_list_pair};
-
-      int field_index = 0; // This value will help us differentiate
-      // between configuration variables (whose field_index value
-      // will be 0) and values (whose field_index value will be 1).
-      // Defining variables that will store the configuration
-      // info within the current line:
-      std::string map_key = "";
-      std::string map_value = "";
-      for (std::string item;
-           std::getline(config_list_pair_inputs, 
-            item, ',');) {
-        if (field_index == 0) {
-          map_key = item;
-        }
-        if (field_index == 1) {
-          map_value = item;
-        }
-        field_index++;
-      }
-      config_map[map_key] = map_value;
-    }
-    line_count++;
-  }
-
-  // Parsing the active time zone file:
-
-  std::vector<std::vector<std::string>> tz_vec;
+  std::map<std::string, std::string> config_map = csv_to_map(
+    "../config/"+config_file_map["config_list"]);
 
   // Reading time zone database codes and user-specified titles
   // for each time zone from tz_list:
-  std::ifstream tz_list_file{"../config/" + config_file_map[
-    "tz_list"]};
+  // (csv_to_vector() will be used here so that we can maintain
+  // the original order in which time zones were entered.)
 
-  line_count = 0;
-  for (std::string tz_list_pair; std::getline(
-    tz_list_file, tz_list_pair);) {
-
-    if (line_count != 0) {
-      std::istringstream tz_list_pair_inputs{tz_list_pair};
-
-      std::vector<std::string> tz_pair_vector{};
-      for (std::string item; std::getline(
-        tz_list_pair_inputs, item, ',');) {
-        tz_pair_vector.push_back(item);
-      }
-      tz_vec.push_back(tz_pair_vector);
-    }
-
-    line_count++;
-  }
+  std::vector<std::vector<std::string>> tz_vec = csv_to_vector(
+    "../config/"+config_file_map["tz_list"]);
 
   // Determining whether or not to show Unix time:
   bool show_unix_time = true;
