@@ -1,0 +1,11 @@
+Item,Value
+entry_name_color,37
+daytime_color,32
+nighttime_color,36
+unix_time_name_color,37
+unix_time_color,37
+show_unix_time,true
+show_seconds,true
+show_year,false
+show_date,true
+show_offset,false

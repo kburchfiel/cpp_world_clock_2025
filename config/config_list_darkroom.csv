@@ -1,0 +1,11 @@
+Item,Value
+entry_name_color,91
+daytime_color,91
+nighttime_color,91
+unix_time_name_color,91
+unix_time_color,91
+show_unix_time,true
+show_seconds,true
+show_year,true
+show_date,true
+show_offset,true
