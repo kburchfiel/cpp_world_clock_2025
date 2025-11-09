@@ -10,7 +10,7 @@ Released under the MIT License
 
 ![](Images/default_output.png)
 
-**Console World Clock 2025** (CWC25) is a simple C++ command-line-interface program displays the current time and date for a list of time zones that you specify. You're also able to customize many aspects of the output, including what colors to use for different components and how much detail to display.
+**Console World Clock 2025** (CWC25) is a simple C++ command-line-interface program that displays the current time and date for a list of time zones that you specify. You're also able to customize many aspects of the output, including what colors to use for different components and how much detail to display.
 
 By default, times will appear in green if they're later than or equal to 8:00:00 and earlier than 20:00:00; all other times will appear in cyan. You can choose different colors and cutoff times than these if you wish, however.
 
