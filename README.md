@@ -19,7 +19,7 @@ The source code makes extensive use of [ANSI escape codes](https://en.wikipedia.
 
 ## Setup instructions
 
-1. If you'd like to download an executable for Windows or Linux, you can do so on Itch.io (link forthcoming); alternatively, you can compile the program yourself (see instructions below). [Note: I encountered issues with compiling this program for MacOS, as the `zoned_time` function wasn't recognized by the laptop's version of Clang/G++.]
+1. If you'd like to download an executable for Windows or Linux, you can do so on Itch.io at https://kburchfiel.itch.io/console-world-clock. alternatively, you can compile the program yourself (see instructions below). [Note: I encountered issues with compiling this program for MacOS, as the `zoned_time` function wasn't recognized by the laptop's version of Clang/G++.]
 
 2. Navigate to the build/ folder within your terminal, then launch the executable. On Linux, you can do so via the following command line entries: 
 
