@@ -1,9 +1,10 @@
 DB_Entry,Display_Name
 US/Samoa,Pago Pago
 Pacific/Honolulu,Honolulu
-US/Pacific,Los Angeles
-America/Phoenix,Phoenix
-US/Eastern,Washington
+America/Los_Angeles,Los Angeles
+America/Denver,Denver
+America/Chicago,Chicago
+America/New_York,Washington
 America/Santiago,Santiago
 America/Sao_Paulo,Sao Paulo
 Atlantic/Azores,Angra
@@ -20,4 +21,4 @@ Asia/Tokyo,Tokyo
 Pacific/Guam,Dededo
 Australia/Sydney,Sydney
 Pacific/Auckland,Auckland
-Pacific/Kiritimati,Kiritimati
+Pacific/Kiritimati,Betio

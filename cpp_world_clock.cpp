@@ -1,6 +1,15 @@
 /* C++ World Clock: 2025 Edition
 By Ken Burchfiel
 Released under the MIT License
+
+# NEXT STEPS:
+
+1. Update code to allow for either horizontal display (which will
+involve tabs and perhaps some other changes to line clearing)
+or standard vertical display (which will use newlines instead)
+
+2. See if you can fix the blinking cursor issue with the tab display.
+
 */
 
 #include <chrono>
@@ -106,8 +115,6 @@ std::vector<std::vector<std::string>> csv_to_vector(
 
   return (csv_vector);
   }
-
-
 
 
 std::string
@@ -275,15 +282,44 @@ void print_tzs(const std::vector<std::vector<std::string>> &tz_vec,
   // out time zones line by line.
   std::string tz_display = "";
 
+  // Specifying separate post-time strings for horizontal and 
+  // vertical display settings:
+  // (These will be displayed after each individual time. 
+  // We should use four spaces following each time when displaying
+  // values horizontally and newlines otherwise. Other tweaks
+  // will need to be made here and there as well.)
+
+  std::string post_time_string = "\033[0m\033[K\n";
+    // \033 allows us to pass ANSI escape sequences to the terminal,
+    // thus letting us control colors, line/display clearing, and 
+    // cursor position. [0m resets colors to their default value, 
+    //and [K clears out any lingering additional text to the right
+    // of each line. These were based on the ANSI escape code 
+    // documentation 
+    // at https://en.wikipedia.org/wiki/ANSI_escape_code .
+
+  std::string tz_display_closure = "\033[J\033[1;1H";
+  // [J clears out any remaining text in the terminal, which may
+  // be helpful following changes to its dimensions.
+    //1;1H returns the cursor to the top left of the terminal so that
+  // we'll be in the right position to display the next set 
+  // of times.
+
+  if (config_map["horizontal_display"] == "true")
+  {post_time_string = "\033[0m    ";
+
+  tz_display_closure = "\033[K\033[J\n\033[1;1H";}
+  
+  // Showing Unix Time (the number of seconds, not including
+  // leap seconds, since 1970-01-01 00:00:00) if requested:
   if (config_map["show_unix_time"] == "true") {
     tz_display += "\033[" + config_map["unix_time_name_color"] + "m" +
                   "Unix Time: " + "\033[" + config_map[
                     "unix_time_color"] +
                   "m" + std::to_string(unix_time_s) 
-                  + "\033[0m\033[K\n";
+                  + post_time_string;
   }
-  // \033[K clears out any lingering additional text to the right
-  // of each line.
+
 
   for (const std::vector<std::string> &tz_vec_entry : tz_vec) {
 
@@ -311,7 +347,9 @@ void print_tzs(const std::vector<std::vector<std::string>> &tz_vec,
       0, 2));
     std::string time_color = "\033[" + config_map[
       "daytime_color"] + "m";
-    if ((tz_time_hours < 8) || (tz_time_hours >= 20)) {
+    if ((tz_time_hours < std::stoi(
+      config_map["daytime_start"])) || (
+      tz_time_hours >= std::stoi(config_map["daytime_end"]))) {
       time_color = "\033[" + config_map["nighttime_color"] + "m";
     }
 
@@ -319,13 +357,13 @@ void print_tzs(const std::vector<std::vector<std::string>> &tz_vec,
         "\033[" + config_map["entry_name_color"] + "m";
 
     tz_display += entry_name_color + tz_vec_entry[1] + ": " + 
-    time_color + tz_time_str + "\033[0m\033[K\n";
+    time_color + tz_time_str + post_time_string;
   }
 
   // Clearing out the rest of the screen (which may be necessary
   // if the window had been resized), then returning to the
   // top of the terminal:
-  tz_display += "\033[J\033[1;1H";
+  tz_display += tz_display_closure;
 
   std::cout << tz_display;
 }

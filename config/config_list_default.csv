@@ -1,5 +1,7 @@
 Item,Value
 entry_name_color,37
+daytime_start,8
+daytime_end,20
 daytime_color,32
 nighttime_color,36
 unix_time_name_color,37
@@ -9,3 +11,4 @@ show_seconds,true
 show_year,false
 show_date,true
 show_offset,false
+horizontal_display,false
