@@ -14,7 +14,7 @@ Released under the MIT License
 
 By default, times will appear in green if they're later than or equal to 8:00:00 and earlier than 20:00:00; all other times will appear in cyan. You can choose different colors and cutoff times than these if you wish, however.
 
-The source code makes extensive use of [ANSI escape codes to control](https://en.wikipedia.org/wiki/ANSI_escape_code) the color and display of each time zone.
+The source code makes extensive use of [ANSI escape codes](https://en.wikipedia.org/wiki/ANSI_escape_code) to control the color and display of each time zone.
 
 
 ## Setup instructions
