@@ -1,12 +1,12 @@
 # Console World Clock (2025 Edition)
 
-Version 2.1.0
+Version 2.1.0 (Linux); Version 2.0.0 (Windows)
 
 By Kenneth Burchfiel
 
 Released under the MIT License
 
-*Note: This program, like all of my other programs, was created *without* the use of generative AI tools.*
+*Note: This program, like all of my other programs, was created \*without\* the use of generative AI tools.*
 
 ![](Images/default_output.png)
 
@@ -19,7 +19,9 @@ The source code makes extensive use of [ANSI escape codes](https://en.wikipedia.
 
 ## Setup instructions
 
-1. If you'd like to download an executable for Windows or Linux, you can do so on Itch.io at https://kburchfiel.itch.io/console-world-clock. alternatively, you can compile the program yourself (see instructions below). [Note: I encountered issues with compiling this program for MacOS, as the `zoned_time` function wasn't recognized by the laptop's version of Clang/G++.]
+1. If you'd like to download an executable for Windows or Linux, you can do so on Itch.io at https://kburchfiel.itch.io/console-world-clock. alternatively, you can compile the program yourself (see instructions below). 
+
+    [Note: I encountered issues with compiling this program for MacOS, as the `zoned_time` function wasn't recognized by the laptop's version of Clang/G++. Also, the Windows executable is probably at least somewhat less efficient than the Linux executable, as the latter makes use of a C++26 function that doesn't yet appear to be supported by MSVC.]
 
 2. Navigate to the build/ folder within your terminal, then launch the executable. On Linux, you can do so via the following command line entries: 
 
@@ -41,7 +43,9 @@ cwc25.exe
 
  The program will show, by default, the time, month, and date for 23 cities around the world along with the current Unix Time. However, there are many ways to customize its output, either via pre-existing configuration files or ones that you create yourself.
 
-You can resize the terminal as needed to accommodate your own time zone list and configuration settings. While it's most convenient to just have it on the side of your current screen, you could also dedicate an entire external monitor to it if you'd like!
+You can resize the terminal as needed to accommodate your own time zone list and configuration settings. **(If not all of the time zones can be displayed, the program may not operate correctly; you should be able to resolve this by increasing your terminal's height and/or using a smaller font size.)**
+
+While it's most convenient to just have it on the side of your current screen, you could also dedicate an entire external monitor to it if you'd like!
 
 ![](Images/side_monitor_pic.jpg)
 
@@ -155,10 +159,17 @@ Here are examples of what the program will look like when different .csv files i
 
 To compile the source code, simply navigate to the project's build/ folder within your terminal and run gpp_build_script.sh, which will create an executable version of cpp_world_clock.cpp using g++ with the C++26 standard (which is needed for the `runtime_format()` function to work).
 
-(Note: the code expects the executable to be located in a /build subfolder and **not** the project's root folder.)
+(Notes: 
+
+1. The code expects the executable to be located in a /build subfolder and **not** the project's root folder.
+2. The Linux-specific CMakeLists.txt code isn't working properly; therefore, you should only use that file when compiling the program for Windows (see below).
 
 ### Windows
-[To come]
+You can use CMake with the included CMakeLists.txt file to compile the source code for Windows. Simply create a build folder within your project's root folder (if one isn't already present); navigate to that folder within your terminal; and run:
+
+`cmake ..`
+
+`cmake --build .` (Don't forget the period at the end!)
 
 As noted earlier, I was not able to compile this program on MacOS, as the compiler on the laptop I was using didn't appear to support the `zoned_time()` function.
     
