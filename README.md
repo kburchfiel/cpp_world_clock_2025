@@ -151,22 +151,14 @@ Here are examples of what the program will look like when different .csv files i
 
 ## Compilation instructions
 
-To compile the program, you can use CMake with the included CMakeLists.txt file. Simply create a build folder within your project's root folder; navigate to that folder within your terminal; and run:
+### Linux
 
-`cmake ..`
-
-`cmake --build .` (Don't forget the period at the end!)
-
-Alternatively, you can create an executable using a compiler of your choice. For instance, to compile the program with g++, navigate to the project's root folder, make a build directory, and then run: 
-
-`g++ cpp_world_clock.cpp -std=c++23 -o build/cwc25`
-
-The Clang command is almost identical:
-
-`clang++ cpp_world_clock.cpp -std=c++23 -o build/cwc25`
+To compile the source code, simply navigate to the project's build/ folder within your terminal and run gpp_build_script.sh, which will create an executable version of cpp_world_clock.cpp using g++ with the C++26 standard (which is needed for the `runtime_format()` function to work).
 
 (Note: the code expects the executable to be located in a /build subfolder and **not** the project's root folder.)
 
-As noted earlier, I was able to compile it on Linux and Windows, but not MacOS. I might try using CMake to cross-compile it for MacOS within Linux at some point.
+### Windows
+[To come]
 
+As noted earlier, I was not able to compile this program on MacOS, as the compiler on the laptop I was using didn't appear to support the `zoned_time()` function.
     

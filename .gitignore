@@ -1,5 +1,6 @@
 /build
 /old_copies
+*old*
 /releases
 .jupyter
 /new_build_test
