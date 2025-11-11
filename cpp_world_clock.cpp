@@ -32,8 +32,7 @@ std::map<std::string, std::string> csv_to_map(std::string csv_file_path) {
   // Retrieving each line within the .csv file:
 
   int line_count = 0;
-  for (std::string row_string; std::getline(
-    csv_ifstream, row_string);) {
+  for (std::string row_string; std::getline(csv_ifstream, row_string);) {
 
     // Parsing each individual line (other than the header, which
     // will get skipped):
@@ -47,19 +46,20 @@ std::map<std::string, std::string> csv_to_map(std::string csv_file_path) {
       // info within the current line:
       std::string map_key = "";
       std::string map_value = "";
-      for (std::string item; std::getline(
-        row_pair, item, ',');) {
+      for (std::string item; std::getline(row_pair, item, ',');) {
         if (field_index == 0) {
           map_key = item;
         }
         if (field_index == 1) {
           map_value = item;
         }
-        
+
         if (field_index > 1) // We don't need to scan any additional
         // rows within the CSV file, so we can break out of the loop
         // at this point.
-        {break;}
+        {
+          break;
+        }
 
         field_index++;
       }
@@ -71,8 +71,7 @@ std::map<std::string, std::string> csv_to_map(std::string csv_file_path) {
   return csv_map;
 }
 
-std::vector<std::vector<std::string>> csv_to_vector(
-  std::string csv_file_path) {
+std::vector<std::vector<std::string>> csv_to_vector(std::string csv_file_path) {
   // This function converts a CSV file to a vector of vectors of
   // strings. This function will be a better fit than csv_to_map()
   // for CSV files that have more than two columns, *or* when
@@ -89,15 +88,13 @@ std::vector<std::vector<std::string>> csv_to_vector(
   std::ifstream csv_ifstream{csv_file_path};
 
   int line_count = 0;
-  for (std::string row_string; std::getline(
-    csv_ifstream, row_string);) {
+  for (std::string row_string; std::getline(csv_ifstream, row_string);) {
 
     if (line_count != 0) {
       std::istringstream row_values{row_string};
 
       std::vector<std::string> row_vector{};
-      for (std::string item; std::getline(
-        row_values, item, ',');) {
+      for (std::string item; std::getline(row_values, item, ',');) {
         row_vector.push_back(item);
       }
       csv_vector.push_back(row_vector);
@@ -112,7 +109,7 @@ std::vector<std::vector<std::string>> csv_to_vector(
 std::string
 get_tz_time(const std::string &tz_string,
             const std::chrono::time_point<std::chrono::system_clock,
-                                std::chrono::seconds> &current_time,
+                                          std::chrono::seconds> &current_time,
             std::map<std::string, std::string> &config_map,
             std::string &format_string) {
 
@@ -133,38 +130,34 @@ get_tz_time(const std::string &tz_string,
   // corresponding to this code and the start of the most recent
   // day, then using duration_cast() to convert that difference
   // to an integer.
-  // (Previously, I had extracted the hour of day from the 
+  // (Previously, I had extracted the hour of day from the
   // string-formatted version of this time; however, this approach
   // will fail if the hour isn't at the point of the string that
-  // we expect (which can occur when a custom format code is 
+  // we expect (which can occur when a custom format code is
   // being used).
   // This code was based in part on Howard Hinnant's excellent answer at
-  // https://stackoverflow.com/a/15958113/13097194 
-  // and 
-  
+  // https://stackoverflow.com/a/15958113/13097194
+  // and
+
   auto zoned_tp = tz_time.get_local_time();
   auto days = std::chrono::floor<std::chrono::days>(zoned_tp);
-  int tz_time_hours = std::chrono::duration_cast<std::chrono::hours>(
-  zoned_tp-days).count();
+  int tz_time_hours =
+      std::chrono::duration_cast<std::chrono::hours>(zoned_tp - days).count();
 
-    // Making daytime and nighttime hours easier to distinguish:
-    std::string time_color = "\033[" + config_map[
-      "daytime_color"] + "m";
-    if ((tz_time_hours < std::stoi(config_map[
-      "daytime_start"])) ||
-        (tz_time_hours >= std::stoi(config_map[
-          "daytime_end"]))) {
-      time_color = "\033[" + config_map["nighttime_color"] + "m";
-    }
-
+  // Making daytime and nighttime hours easier to distinguish:
+  std::string time_color = "\033[" + config_map["daytime_color"] + "m";
+  if ((tz_time_hours < std::stoi(config_map["daytime_start"])) ||
+      (tz_time_hours >= std::stoi(config_map["daytime_end"]))) {
+    time_color = "\033[" + config_map["nighttime_color"] + "m";
+  }
 
   // Determining how to show dates and time zones:
   // The following line was based on
   // https://en.cppreference.com/w/cpp/chrono/zoned_time/formatter.html
   // and https://en.cppreference.com/w/cpp/utility/format/runtime_format.html .
-  
-  return (time_color+std::format(
-    std::runtime_format(format_string), tz_time));
+
+  return (time_color +
+          std::format(std::runtime_format(format_string), tz_time));
 }
 
 void print_tzs(const std::vector<std::vector<std::string>> &tz_vec,
@@ -240,14 +233,13 @@ void print_tzs(const std::vector<std::vector<std::string>> &tz_vec,
     // Specifying which format code to pass to get_tz_time():
 
     std::string tz_time_str =
-        get_tz_time(tz_vec_entry[1], 
-        current_time, config_map, format_string);
+        get_tz_time(tz_vec_entry[1], current_time, config_map, format_string);
 
     std::string entry_name_color =
         "\033[" + config_map["entry_name_color"] + "m";
 
-    tz_display += entry_name_color + tz_vec_entry[0] 
-    + " " + tz_time_str + post_time_string;
+    tz_display += entry_name_color + tz_vec_entry[0] + " " + tz_time_str +
+                  post_time_string;
   }
 
   // Clearing out the rest of the screen (which may be necessary
@@ -280,8 +272,7 @@ int main() {
 
   // Parsing the active configuration file:
   std::map<std::string, std::string> config_map =
-      csv_to_map("../config/" + config_file_map[
-        "config_list"]);
+      csv_to_map("../config/" + config_file_map["config_list"]);
 
   // Reading time zone database codes and user-specified titles
   // for each time zone from tz_list:
@@ -289,8 +280,7 @@ int main() {
   // the original order in which time zones were entered.)
 
   std::vector<std::vector<std::string>> tz_vec =
-      csv_to_vector("../config/" + config_file_map[
-        "tz_list"]);
+      csv_to_vector("../config/" + config_file_map["tz_list"]);
 
   // Determining whether or not to show Unix time:
   bool show_unix_time = true;
@@ -298,29 +288,28 @@ int main() {
     show_unix_time = false;
   }
 
+  // Specifying, based on the show_seconds, show_year, show_date,
+  // and show_offset options within the configuration file,
+  // how times should be formatted:
+  // This specification will entail constructing a format string,
+  // piece by piece (depending on the user's preferences),
+  // that can then get passed to the get_tz_time().
+  // The new runtime_format() function, available within
+  // C++26, makes this approach possible.
 
-    // Specifying, based on the show_seconds, show_year, show_date,
-    // and show_offset options within the configuration file,
-    // how times should be formatted:
-    // This specification will entail constructing a format string,
-    // piece by piece (depending on the user's preferences),
-    // that can then get passed to the get_tz_time().
-    // The new runtime_format() function, available within
-    // C++26, makes this approach possible.
+  // This code was based on:
+  // https://stackoverflow.com/a/68754043/13097194 ;
+  // https://en.cppreference.com/w/cpp/chrono/zoned_time/formatter.html ;
+  // and https://en.cppreference.com/w/cpp/utility/format/runtime_format.html
+  // .
 
-    // This code was based on:
-    // https://stackoverflow.com/a/68754043/13097194 ;
-    // https://en.cppreference.com/w/cpp/chrono/zoned_time/formatter.html ;
-    // and https://en.cppreference.com/w/cpp/utility/format/runtime_format.html
-    // .
+  std::string format_string = "";
 
-    std::string format_string = "";
+  if (config_map["use_custom_format"] == "true") {
+    format_string = config_map["custom_format_code"];
+  } else
 
-    if (config_map["use_custom_format"] == "true")
-      {format_string = config_map["custom_format_code"];}  
-    else
-
-{
+  {
 
     format_string = "{:";
     // Specifying whether to show seconds: (the HH-MM component
@@ -337,36 +326,41 @@ int main() {
     // show_date and date_before_month configuration entries)
     // to take into account:
     // YYYY-MM-DD; MM-DD; DD-MM-YYYY; DD-MM; and YYYY.
-    if (config_map["show_date"] == "true")
-    {
-    if (config_map["date_before_month"] == "true")
+    if (config_map["show_date"] == "true") {
+      if (config_map["date_before_month"] == "true")
 
-    {
-      if (config_map["show_year"] == "true") 
-      {format_string += " (%d-%m-%Y)";}
-      else // The year won't get displayed.
       {
-        {format_string += " (%d-%m)";}
+        if (config_map["show_year"] == "true") {
+          format_string += " (%d-%m-%Y)";
+        } else // The year won't get displayed.
+        {
+          {
+            format_string += " (%d-%m)";
+          }
+        }
       }
-    }
-    
-    else // Months will come before dates.
 
-    {
-      if (config_map["show_year"] == "true") 
-      {format_string += " (%F)";} // %F is short for YYYY-MM-DD.
-      else // The year won't get displayed.
+      else // Months will come before dates.
+
       {
-        {format_string += " (%m-%d)";}
+        if (config_map["show_year"] == "true") {
+          format_string += " (%F)";
+        }    // %F is short for YYYY-MM-DD.
+        else // The year won't get displayed.
+        {
+          {
+            format_string += " (%m-%d)";
+          }
+        }
       }
-    }
-  } // In this case, the user has chosen not to include the date.
+    } // In this case, the user has chosen not to include the date.
 
-    else if (config_map["show_date"] == "false")
+    else if (config_map["show_year"] == "true")
     // This would be an unusual condition,
     // but I'll accommodate it nevertheless!
     {
-      format_string += " (%Y)";}    
+      format_string += " (%Y)";
+    }
 
     if (config_map["show_offset"] == "true") {
       format_string += " (%z)";
@@ -377,9 +371,7 @@ int main() {
     // // For debugging
     // std::cout << "Format string:" << format_string << "\n";
     // std::this_thread::sleep_for(std::chrono::seconds(1));
-
   }
-
 
   while (true) {
     // We'll want to next run the script as close to the top of

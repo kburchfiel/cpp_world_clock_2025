@@ -155,8 +155,6 @@ Here are examples of what the program will look like when different .csv files i
 
 ![](Images/detailed_output.png)
 
-![](Images/detailed_output_airports.png)
-
 **All-red output:** (Useful for darkrooms, mission control centers, situation rooms, etc.)
 
 ![](Images/darkroom_output.png)
