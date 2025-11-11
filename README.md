@@ -1,6 +1,6 @@
 # Console World Clock (2025 Edition)
 
-Version 2.0.0
+Version 2.1.0
 
 By Kenneth Burchfiel
 
