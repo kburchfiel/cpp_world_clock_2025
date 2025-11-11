@@ -1,10 +1,10 @@
-DB_Entry,Display_Name
-US/Pacific,Los Angeles
-US/Eastern,Washington
-America/Sao_Paulo,Sao Paulo
-UTC,UTC
-Europe/London,London
-Europe/Rome,Rome
-Asia/Calcutta,Mumbai
-Asia/Tokyo,Tokyo
-Australia/Sydney,Sydney
+Display_Name,DB_Entry
+Los Angeles ,US/Pacific
+Washington  ,US/Eastern
+Sao Paulo   ,America/Sao_Paulo
+UTC         ,UTC
+London      ,Europe/London
+Rome        ,Europe/Rome
+Mumbai      ,Asia/Calcutta
+Tokyo       ,Asia/Tokyo
+Sydney      ,Australia/Sydney

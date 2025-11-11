@@ -1,5 +1,5 @@
-DB_Entry,Display_Name
-US/Eastern,New York
+Display_Name,DB_Entry
+New York,US/Eastern
 UTC,UTC
-Europe/London,London
-Asia/Tokyo,Tokyo
+London,Europe/London
+Tokyo,Asia/Tokyo

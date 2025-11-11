@@ -55,6 +55,12 @@ std::map<std::string, std::string> csv_to_map(std::string csv_file_path) {
         if (field_index == 1) {
           map_value = item;
         }
+        
+        if (field_index > 1) // We don't need to scan any additional
+        // rows within the CSV file, so we can break out of the loop
+        // at this point.
+        {break;}
+
         field_index++;
       }
       csv_map[map_key] = map_value;
@@ -122,12 +128,43 @@ get_tz_time(const std::string &tz_string,
 
   std::chrono::zoned_time tz_time{tz_string, current_time};
 
+  // Retrieving the hour of the day for this time zone:
+  // (This will involve finding the difference between the time point
+  // corresponding to this code and the start of the most recent
+  // day, then using duration_cast() to convert that difference
+  // to an integer.
+  // (Previously, I had extracted the hour of day from the 
+  // string-formatted version of this time; however, this approach
+  // will fail if the hour isn't at the point of the string that
+  // we expect (which can occur when a custom format code is 
+  // being used).
+  // This code was based in part on Howard Hinnant's excellent answer at
+  // https://stackoverflow.com/a/15958113/13097194 
+  // and 
+  
+  auto zoned_tp = tz_time.get_local_time();
+  auto days = std::chrono::floor<std::chrono::days>(zoned_tp);
+  int tz_time_hours = std::chrono::duration_cast<std::chrono::hours>(
+  zoned_tp-days).count();
+
+    // Making daytime and nighttime hours easier to distinguish:
+    std::string time_color = "\033[" + config_map[
+      "daytime_color"] + "m";
+    if ((tz_time_hours < std::stoi(config_map[
+      "daytime_start"])) ||
+        (tz_time_hours >= std::stoi(config_map[
+          "daytime_end"]))) {
+      time_color = "\033[" + config_map["nighttime_color"] + "m";
+    }
+
+
   // Determining how to show dates and time zones:
   // The following line was based on
   // https://en.cppreference.com/w/cpp/chrono/zoned_time/formatter.html
   // and https://en.cppreference.com/w/cpp/utility/format/runtime_format.html .
-
-  return (std::format(std::runtime_format(format_string), tz_time));
+  
+  return (time_color+std::format(
+    std::runtime_format(format_string), tz_time));
 }
 
 void print_tzs(const std::vector<std::vector<std::string>> &tz_vec,
@@ -203,29 +240,14 @@ void print_tzs(const std::vector<std::vector<std::string>> &tz_vec,
     // Specifying which format code to pass to get_tz_time():
 
     std::string tz_time_str =
-        get_tz_time(tz_vec_entry[0], 
+        get_tz_time(tz_vec_entry[1], 
         current_time, config_map, format_string);
-    // To make daytime and nighttime hours easier to distinguish,
-    // we'll color times from 8:00:00 to 19:59:59 green,
-    // and all othe rtimes magenta. We'll do this by (1) retrieving
-    // the hours component of the timestamp in integer form;
-    // (2) checking whether this integer is less than 8 or
-    // greater than/equal to 20; and then specifying the ANSI escape
-    // code that corresponds to the desired color.
-    // (These escape codes were retrieved from
-    // https://en.wikipedia.org/wiki/ANSI_escape_code#Colors ).
-    int tz_time_hours = std::stoi(tz_time_str.substr(0, 2));
-    std::string time_color = "\033[" + config_map["daytime_color"] + "m";
-    if ((tz_time_hours < std::stoi(config_map["daytime_start"])) ||
-        (tz_time_hours >= std::stoi(config_map["daytime_end"]))) {
-      time_color = "\033[" + config_map["nighttime_color"] + "m";
-    }
 
     std::string entry_name_color =
         "\033[" + config_map["entry_name_color"] + "m";
 
-    tz_display += entry_name_color + tz_vec_entry[1] + ": " + time_color +
-                  tz_time_str + post_time_string;
+    tz_display += entry_name_color + tz_vec_entry[0] 
+    + " " + tz_time_str + post_time_string;
   }
 
   // Clearing out the rest of the screen (which may be necessary
@@ -276,21 +298,6 @@ int main() {
     show_unix_time = false;
   }
 
-  while (true) {
-    // We'll want to next run the script as close to the top of
-    // the following second as possible--which can be accomplished
-    // by first rounding a system clock down to get to the
-    // current second; adding exactly one second to it; and then
-    // pausing the script until that second.
-    // This code was based on:
-    // https://en.cppreference.com/w/cpp/chrono/time_point/round ;
-    // Bames53's response at
-    // https://stackoverflow.com/a/9747668/13097194 ;
-    // https://cppreference.net/cpp/chrono/time_point.html;
-    // https://en.cppreference.com/w/cpp/chrono/duration.html ;
-    // and
-    // https://en.cppreference.com/w/cpp/thread/sleep_until.html .
-    // See also: https://stackoverflow.com/a/79802383/13097194
 
     // Specifying, based on the show_seconds, show_year, show_date,
     // and show_offset options within the configuration file,
@@ -307,25 +314,59 @@ int main() {
     // and https://en.cppreference.com/w/cpp/utility/format/runtime_format.html
     // .
 
-    std::string format_string = "{:";
+    std::string format_string = "";
+
+    if (config_map["use_custom_format"] == "true")
+      {format_string = config_map["custom_format_code"];}  
+    else
+
+{
+
+    format_string = "{:";
+    // Specifying whether to show seconds: (the HH-MM component
+    // will always be shown.)
     if (config_map["show_seconds"] == "true") {
       format_string += "%T";
     } else {
       format_string += "%R";
     }
 
-    if ((config_map["show_year"] == "true") &&
-        (config_map["show_date"] == "true")) {
-      format_string += " (%F)";
-    } else if (config_map["show_year"] == "true")
-    // // This would be an unusual
-    // condition,
-    // // but I'll accommodate it nevertheless!
+    // Specifying which date format to use:
+    // This section is a bit more complex, since there are five
+    // possible combinations (governed by the show_year,
+    // show_date and date_before_month configuration entries)
+    // to take into account:
+    // YYYY-MM-DD; MM-DD; DD-MM-YYYY; DD-MM; and YYYY.
+    if (config_map["show_date"] == "true")
     {
-      format_string += " (%Y)";
-    } else if (config_map["show_date"] == "true") {
-      format_string += " (%m-%d)";
+    if (config_map["date_before_month"] == "true")
+
+    {
+      if (config_map["show_year"] == "true") 
+      {format_string += " (%d-%m-%Y)";}
+      else // The year won't get displayed.
+      {
+        {format_string += " (%d-%m)";}
+      }
     }
+    
+    else // Months will come before dates.
+
+    {
+      if (config_map["show_year"] == "true") 
+      {format_string += " (%F)";} // %F is short for YYYY-MM-DD.
+      else // The year won't get displayed.
+      {
+        {format_string += " (%m-%d)";}
+      }
+    }
+  } // In this case, the user has chosen not to include the date.
+
+    else if (config_map["show_date"] == "false")
+    // This would be an unusual condition,
+    // but I'll accommodate it nevertheless!
+    {
+      format_string += " (%Y)";}    
 
     if (config_map["show_offset"] == "true") {
       format_string += " (%z)";
@@ -337,17 +378,40 @@ int main() {
     // std::cout << "Format string:" << format_string << "\n";
     // std::this_thread::sleep_for(std::chrono::seconds(1));
 
+  }
+
+
+  while (true) {
+    // We'll want to next run the script as close to the top of
+    // the following second as possible--which can be accomplished
+    // by first rounding a system clock down to get to the
+    // current second; adding exactly one second to it; and then
+    // pausing the script until that second.
+    // This code was based on:
+    // https://en.cppreference.com/w/cpp/chrono/time_point/round ;
+    // Bames53's response at
+    // https://stackoverflow.com/a/9747668/13097194 ;
+    // https://cppreference.net/cpp/chrono/time_point.html;
+    // https://en.cppreference.com/w/cpp/chrono/duration.html ;
+    // and
+    // https://en.cppreference.com/w/cpp/thread/sleep_until.html .
+    // See also: https://stackoverflow.com/a/79802383/13097194
+
     auto next_second = std::chrono::floor<std::chrono::seconds>(
                            std::chrono::system_clock::now()) +
                        std::chrono::seconds(1);
     std::this_thread::sleep_until(next_second);
     // The following timing code, which I've since commented out,
     // allowed me to check how long it took to render a new set of
-    // times. Generally, each set of times got rendered
-    // in around 700 microseconds
-    // (e.g. 0.8 milliseconds).
+    // times.
+    // It took around 1200 microseconds (e.g. 1.2ms), on average,
+    // for the script to render around 32 times; around 800-900
+    // microseconds for it to render roughly 25 times;
+    // and around 300-400 microseconds for it to render 10 different
+    // times.
     // These times might be substantially slower or faster on your
     // own machine.
+
     // auto start_time = std::chrono::high_resolution_clock::now();
     print_tzs(tz_vec, config_map, format_string);
     // auto end_time = std::chrono::high_resolution_clock::now();

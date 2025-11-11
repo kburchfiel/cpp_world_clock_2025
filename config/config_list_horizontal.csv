@@ -1,14 +1,17 @@
-Item,Value
-entry_name_color,91
-daytime_start,8
-daytime_end,20
-daytime_color,91
-nighttime_color,91
-unix_time_name_color,91
-unix_time_color,91
-show_unix_time,false
-show_seconds,true
-show_year,false
-show_date,false
-show_offset,false
-horizontal_display,true
+Item,Value,Notes
+entry_name_color,91,See README for more comprehensive documentation.
+daytime_start,8,Reference for color codes: https://en.wikipedia.org/wiki/ANSI_escape_code#Colors
+daytime_end,20,
+daytime_color,91,
+nighttime_color,91,
+unix_time_name_color,91,
+unix_time_color,91,
+show_unix_time,false,
+show_seconds,true,
+show_year,false,
+show_date,false,
+show_offset,false,
+date_before_month,false,Set to true to show dates before months. Only compatible with v2.2.0 and later releases.
+use_custom_format,false,Will override the previous four configuration options if set to true. Only compatible with v2.2.0 and later releases.
+custom_format_code,{:%Y-%m-%dT%H:%M:%S%z},Only takes effect if use_custom_format is set to true. Do not include any quotation marks or commas. Reference for custom format codes: https://en.cppreference.com/w/cpp/chrono/zoned_time/formatter.html Only compatible with v2.2.0 and later releases.
+horizontal_display,true,

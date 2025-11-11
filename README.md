@@ -1,12 +1,14 @@
 # Console World Clock (2025 Edition)
 
-Version 2.1.0 (Linux); Version 2.0.0 (Windows)
-
 By Kenneth Burchfiel
 
 Released under the MIT License
 
 *Note: This program, like all of my other programs, was created \*without\* the use of generative AI tools.*
+
+**Latest versions:**
+* **Linux**: 2.2.0
+* **Windows**: 2.0.0
 
 ![](Images/default_output.png)
 
@@ -21,7 +23,7 @@ The source code makes extensive use of [ANSI escape codes](https://en.wikipedia.
 
 1. If you'd like to download an executable for Windows or Linux, you can do so on Itch.io at https://kburchfiel.itch.io/console-world-clock. alternatively, you can compile the program yourself (see instructions below). 
 
-    [Note: I encountered issues with compiling this program for MacOS, as the `zoned_time` function wasn't recognized by the laptop's version of Clang/G++. Also, the Windows executable is probably at least somewhat less efficient than the Linux executable, as the latter makes use of a C++26 function that doesn't yet appear to be supported by MSVC.]
+    [Note: I encountered issues with compiling this program for MacOS, as the `zoned_time` function wasn't recognized by the laptop's version of Clang/G++. Also, the Windows executable offers fewer features than the Linux executable, as the latter makes use of a C++26 function (`runtime_format()` that doesn't yet appear to be supported by MSVC. Once MSVC does support `runtime_format`, I should be able to create a Version 2.2.0 release for Windows as well.]
 
 2. Navigate to the build/ folder within your terminal, then launch the executable. On Linux, you can do so via the following command line entries: 
 
@@ -63,23 +65,29 @@ Thus, in order to update the program's output, you'll need to replace the existi
 
 When creating a new .csv file for the time zones you wish to display, you can use one of the existing files (such as tz_list_default.csv) as a guide. You can choose any number of time zones as long as you specify at least one; however, the output may not display correctly if there's not enough space on your monitor to show all of them.
 
-Within your CSV file, the first column should show time zone database entries ([available here](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones), and the second column should show the labels you'd like to assign to those entries. (These labels can include spaces, but they must not include commas.) World times will be displayed in the order that they're entered within this database. 
+Within your CSV file, the first column should show the labels you'd like to assign to each entry, and the second column should show their corresponding time zone database names ([available here](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones)). These labels can include spaces, but they must not include commas. World times will be displayed in the order that they're entered within this database. 
 
 [This map](https://upload.wikimedia.org/wikipedia/commons/8/88/World_Time_Zones_Map.png) can help you identify which time zones you might want to add to your program.
 
 For instance, an entry for Washington, DC could be entered as follows:
 
-`America/New_York,Washington`
+`Washington,America/New_York`
 
-(If you're updating this .csv file within a spreadsheet editor, simply add `America/New York` to the first cell and `Washington` to the second one.)
+(If you're updating this .csv file within a spreadsheet editor, simply add `Washington` to the first cell and `America/New York` to the second one.)
 
 Washington, like most cities, doesn't have its own time zone database entry, which is why we're using New York (another city within the same US Eastern time zone) instead.
 
 You can replace 'Washington' with a value of your choice, such as an airport code:
 
-`America/New_York,IAD`
+`IAD,America/New_York`
 
 Note that the first row of all configuration files, including time zone lists, will be skipped by the program, as it's expected to be a header row.
+
+#### Tabbed output
+
+If you would like time entries to line up with one another, simply add tabs/spaces to these files as needed. This may be easier within a text editor like VS Codium:
+
+![](Images/tab_example.png)
 
 ### Updating configuration settings
 
@@ -90,11 +98,14 @@ of the CSV file containing the program's default settings (config_list_default.c
 
 1. To adjust color values, you'll need to enter the ANSI escape code that corresponds to your desired foreground color. A list of these codes can be found at https://en.wikipedia.org/wiki/ANSI_escape_code#Colors . For instance, if you would like to make daytime colors yellow, set the daytime_color setting to 33 (the foreground color for yellow).
 
-2. For boolean (yes/no) entries, enter 'true' for yes and 'false' for no--not True, FALSE, etc.
+2. For boolean (yes/no) entries, enter `true` for yes and `false` for no--not True, FALSE, 'true', "false", etc.
 
 3. Make sure not to add any spaces before or after configuration variables or values--or the commas that separate them. (For example, you can enter `entry_name_color,37`, but *not* `entry_name_color, 37`.)
 
 Here are the following configuration settings that you can specify, along with their values in config_list_default.csv:
+
+
+#### Settings for Versions 2.0.0+
 
 1. `entry_name_color`: the color in which to display time zone names. Default: `37` (the ANSI escape color for white)
 1. `daytime_start`: an integer corresponding to the first hour to which you would like to assign 'daytime' colors to times. Default: `8`
@@ -120,6 +131,13 @@ Here are the following configuration settings that you can specify, along with t
 1. `show_date`: whether or not to show the date (in MM-DD format). Default: `true`
 1. `show_offset`: whether or not to show the time zone offset codes for each time zone. Default: `false`
 1. `horizontal_display`: whether or not to display times horizontally rather than vertically. Default: `false`
+
+#### Settings for versions 2.2.0+
+1. `date_before_month`: whether or not to display dates before months (e.g. 3-4 instead of 4-3 for April 3). 
+    Note: if `date_before_month` and `show_year` are both set to true, years will be placed after the month (e.g. 3-4-2025 for April 3, 2025); when `date_before_month` and `show_year` are set to false and true, respectively, years will be shown before the month (e.g. 2025-04-03).
+1. `use_custom_format`: Set to `true` to use your own custom format rather than one created through the `show_seconds`, `show_year`, `show_date`, `show_offset`, and `date_before_month` commands.
+1. `custom_format_code`: The custom format code that you would like to use for displaying times. The default, `{:%Y-%m-%dT%H:%M:%S%z}`, will display times in ISO8601 format (e.g. 2025-11-11T15:11:20-0400). The documentation at https://en.cppreference.com/w/cpp/chrono/zoned_time/formatter.html will be a helpful resource when specifying new format codes.
+
 
 ### Examples
 
@@ -151,8 +169,6 @@ Here are examples of what the program will look like when different .csv files i
 
 ![](Images/horizontal_output_simple.png)
 
-
-
 ## Compilation instructions
 
 ### Linux
@@ -173,3 +189,12 @@ You can use CMake with the included CMakeLists.txt file to compile the source co
 
 As noted earlier, I was not able to compile this program on MacOS, as the compiler on the laptop I was using didn't appear to support the `zoned_time()` function.
     
+## Special thanks
+
+Special thanks to Howard Hinnant for his hard work on C++'s chrono library--and for his thorough StackOverflow answers, without which I wouldn't have been able to get the project to its current state!
+
+Also, special thanks to Klaus Alexander for his [insightful feedback](https://www.reddit.com/r/commandline/comments/1ou1l87/comment/no8vj0z/?utm_source=share&utm_medium=web3x&utm_name=web3xcss&utm_term=1&utm_content=share_button) on version 2.1.0 of this project. Many of the improvements in version 2.2.0 are in response to his feedback.
+
+## Dedication
+
+This project is dedicated to our son, Kenneth. I hope he comes to enjoy programming as much as I do!
