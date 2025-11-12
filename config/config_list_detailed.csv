@@ -1,11 +1,11 @@
 Item,Value,Notes
-entry_name_color,37,See README for more comprehensive documentation.
-daytime_start,8,Reference for color codes: https://en.wikipedia.org/wiki/ANSI_escape_code#Colors
+daytime_start,8,See README for more comprehensive documentation.
 daytime_end,20,
-daytime_color,32,
-nighttime_color,36,
-unix_time_name_color,37,
-unix_time_color,37,
+entry_name_color,gray,Valid color options (all lowercase): black; red; green; yellow; 
+daytime_color,green,blue; magenta; cyan; gray; 
+nighttime_color,cyan,bright black; bright red; bright green; bright yellow; 
+unix_time_name_color,gray,bright blue; bright magenta; bright cyan; bright gray
+unix_time_color,gray,Additional colors may be accessible via alternative color codes. See https://en.wikipedia.org/wiki/ANSI_escape_code#Colors and README for more info. For example: 38:5:91 may produce a purple color on your screen.
 show_unix_time,true,
 show_seconds,true,
 show_year,true,

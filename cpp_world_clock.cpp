@@ -14,6 +14,25 @@ Released under the MIT License
 #include <thread>
 #include <vector>
 
+
+// Storing ANSI escape codes for a set of colors:
+// (I retrieved these codes from
+// https://github.com/agauniyal/rang/blob/master/include/rang.hpp . ).
+// The rang repository is released under the Unlicense.
+// For the use of 'bright' to differentiate the final eight colors
+// from the first eight, see: 
+// https://github.com/agauniyal/rang/tree/master
+std::map<std::string,std::string> ansi_color_codes{
+  {"black","30"},{"red","31"}, 
+  {"green","32"}, {"yellow","33"},
+  {"blue","34"},{"magenta","35"},
+  {"cyan","36"},{"gray","37"},
+  {"bright black", "90"}, {"bright red", "91"},
+{"bright green", "92"}, {"bright yellow", "93"},
+ {"bright blue", "94"}, {"bright magenta", "95"},
+{"bright cyan", "96"}, {"bright gray", "97"}};
+
+
 std::map<std::string, std::string> csv_to_map(std::string csv_file_path) {
 
   // This function converts a CSV file to a map with string-based
@@ -281,6 +300,29 @@ int main() {
 
   std::vector<std::vector<std::string>> tz_vec =
       csv_to_vector("../config/" + config_file_map["tz_list"]);
+
+  // Determining the ANSI escape codes that correspond to the 
+  // display colors specified by the user:
+  // Note: the escape code map only contains 16 standard colors;
+  // however, the user may have chosen to submit other valid colors
+  // also. Therefore, if a given color entry isn't found in
+  // the dictionary, the script will assume it's a separate
+  // ANSI escape code and thus pass it on, unconverted, to the 
+  // main while() loop.
+
+  std::vector<std::string> color_variables = {
+    "entry_name_color", "daytime_color", "nighttime_color",
+    "unix_time_name_color", "unix_time_color"};
+
+    for (auto color_variable: color_variables)
+    {
+      if (ansi_color_codes.contains(
+        config_map[color_variable]))
+        // Replacing the color name with its corresponding color 
+        // code:
+        {config_map[color_variable] = ansi_color_codes[
+          config_map[color_variable]];}
+      }
 
   // Determining whether or not to show Unix time:
   bool show_unix_time = true;

@@ -7,6 +7,7 @@ LAX,America/Los_Angeles
 DEN,America/Denver
 ORD,America/Chicago
 IAD,America/New_York
+LIM,America/Lima
 SJU,America/Puerto_Rico
 SCL,America/Santiago
 GRU,America/Sao_Paulo
@@ -14,7 +15,9 @@ GOH,America/Nuuk
 PDL,Atlantic/Azores
 UTC,UTC
 LHR,Europe/London
+LOS,Africa/Lagos
 FCO,Europe/Rome
+JNB,Africa/Johannesburg
 TLV,Asia/Jerusalem
 ADD,Africa/Addis_Ababa
 DXB,Asia/Dubai
@@ -28,4 +31,5 @@ GUM,Pacific/Guam
 SYD,Australia/Sydney
 NAN,Pacific/Fiji
 AKL,Pacific/Auckland
+TBU,Pacific/Tongatapu
 CXI,Pacific/Kiritimati

@@ -1,5 +1,4 @@
 Display_Name,DB_Entry
-PPG,US/Samoa
 HNL,Pacific/Honolulu
 LAX,America/Los_Angeles
 DEN,America/Denver
@@ -8,9 +7,9 @@ IAD,America/New_York
 SJU,America/Puerto_Rico
 SCL,America/Santiago
 GRU,America/Sao_Paulo
-PDL,Atlantic/Azores
 UTC,UTC
 LHR,Europe/London
+LOS,Africa/Lagos
 FCO,Europe/Rome
 TLV,Asia/Jerusalem
 ADD,Africa/Addis_Ababa
@@ -19,7 +18,5 @@ BOM,Asia/Calcutta
 CGK,Asia/Jakarta
 MNL,Asia/Manila
 NRT,Asia/Tokyo
-GUM,Pacific/Guam
 SYD,Australia/Sydney
 AKL,Pacific/Auckland
-CXI,Pacific/Kiritimati

@@ -1,5 +1,4 @@
 DB_Entry,Display_Name
-Pago Pago   ,US/Samoa
 Honolulu    ,Pacific/Honolulu
 Los Angeles ,America/Los_Angeles
 Denver      ,America/Denver
@@ -8,9 +7,9 @@ Washington  ,America/New_York
 Ponce       ,America/Puerto_Rico
 Santiago    ,America/Santiago
 Sao Paulo   ,America/Sao_Paulo
-Angra       ,Atlantic/Azores
 UTC         ,UTC
 London      ,Europe/London
+Lagos       ,Africa/Lagos
 Rome        ,Europe/Rome
 Jerusalem   ,Asia/Jerusalem
 Addis Ababa ,Africa/Addis_Ababa
@@ -19,7 +18,5 @@ Mumbai      ,Asia/Calcutta
 Jakarta     ,Asia/Jakarta
 Manila      ,Asia/Manila
 Tokyo       ,Asia/Tokyo
-Dededo      ,Pacific/Guam
 Sydney      ,Australia/Sydney
 Auckland    ,Pacific/Auckland
-Betio       ,Pacific/Kiritimati

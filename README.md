@@ -7,7 +7,7 @@ Released under the MIT License
 *Note: This program, like all of my other programs, was created \*without\* the use of generative AI tools.*
 
 **Latest versions:**
-* **Linux**: 2.2.0
+* **Linux**: 2.3.0
 * **Windows**: 2.0.0
 
 ![](Images/default_output.png)
@@ -96,7 +96,17 @@ of the CSV file containing the program's default settings (config_list_default.c
 
 **Notes**: 
 
-1. To adjust color values, you'll need to enter the ANSI escape code that corresponds to your desired foreground color. A list of these codes can be found at https://en.wikipedia.org/wiki/ANSI_escape_code#Colors . For instance, if you would like to make daytime colors yellow, set the daytime_color setting to 33 (the foreground color for yellow).
+1. CWC 2.3 and onward support [the following 16 'classic' ANSI escape code colors](https://en.wikipedia.org/wiki/ANSI_escape_code#3-bit_and_4-bit):
+
+    `blue`; `magenta`; `cyan`; `gray`;
+    `bright black`; `bright red`; `bright green`; `bright yellow`; 
+    `bright blue`; `bright magenta`; `bright cyan`; and `bright gray`
+
+    However, other colors may be available as well depending on your terminal. For instance, to access a broader 256-color palette, you can try entering `38:5:x`, where `x` corresponds to one of the 256 colors within [this section of Wikipedia's article on ANSI escape codes](https://en.wikipedia.org/wiki/ANSI_escape_code#8-bit).
+
+    For instance, I was able to get a purple color to display on Gnome Terminal within Linux Mint by entering `38:5:91` in lieu of one of the above 16 codes. However, these alternative codes may not work on your own OS/terminal combo.
+
+1. To adjust color values for pre-2.3 versions of CWC, you'll need to enter the ANSI escape code that corresponds to your desired foreground color. A list of these codes can be found at https://en.wikipedia.org/wiki/ANSI_escape_code#Colors . For instance, if you would like to make daytime colors yellow, set the daytime_color setting to 33 (the foreground color for yellow).
 
 2. For boolean (yes/no) entries, enter `true` for yes and `false` for no--not True, FALSE, 'true', "false", etc.
 
@@ -107,36 +117,37 @@ Here are the following configuration settings that you can specify, along with t
 
 #### Settings for Versions 2.0.0+
 
-1. `entry_name_color`: the color in which to display time zone names. Default: `37` (the ANSI escape color for white)
-1. `daytime_start`: an integer corresponding to the first hour to which you would like to assign 'daytime' colors to times. Default: `8`
-1. `daytime_end`: an integer one greater than the *last* hour to which you would like to assign 'daytime' colors to times. Default: `20`
+1. `daytime_start`: an integer corresponding to the first hour to which you would like to assign 'daytime' colors to times. 
+1. `daytime_end`: an integer one greater than the *last* hour to which you would like to assign 'daytime' colors to times. 
 
     The default settings for daytime_start and daytime_end mean that all times greater than or equal to 8:00:00 (i.e. 8 AM) and *less* than 20:00:00 (i.e. 8 PM) will be assigned the daytime color that you specify; meanwhile, all other times (e.g. 20:00:00 to 7:59:59) will be assigned the nighttime color.
 
     If, for instance, you would like to limit daytime colors to the 9-5 range, use 9 and 17 as your daytime_start and daytime_end values, respectively.
 
-1. `daytime_color`: the color to assign to daytime values (as specified by daytime_start and daytime_end). Default: `32` (green)
-1. `nighttime_color`: the color to assign to nighttime values. Default: `36` (cyan)
+1. `entry_name_color`: the color in which to display time zone names. (See notes above for guidance on adjusting these colors.)
+
+1. `daytime_color`: the color to assign to daytime values (as specified by daytime_start and daytime_end). 
+1. `nighttime_color`: the color to assign to nighttime values.
 
     By the way, if you want all times to use the same color, simply use the same color code for both `daytime_color` and `nighttime_color`.
 
-1. `unix_time_name_color`: the color to assign to the 'Unix Time' name. Default: `37` (white)
-1. `unix_time_color`: the color to assign to the Unix Time value. Default: `37` (white)
+1. `unix_time_name_color`: the color to assign to the 'Unix Time' name.
+1. `unix_time_color`: the color to assign to the Unix Time value.
 
     Note that `unix_time_color` is *not* affected by your daytime/nighttime color settings.
 
-1. `show_unix_time`: whether or not to show the current Unix Time. Default: `true`
-1. `show_seconds`: whether or not to show seconds in addition to hours and minutes. Default: `true`
-1. `show_year`: whether or not to show the year, in YYYY format, for each timestamp. Default: `false`
-1. `show_date`: whether or not to show the date (in MM-DD format). Default: `true`
-1. `show_offset`: whether or not to show the time zone offset codes for each time zone. Default: `false`
-1. `horizontal_display`: whether or not to display times horizontally rather than vertically. Default: `false`
+1. `show_unix_time`: whether or not to show the current Unix Time.
+1. `show_seconds`: whether or not to show seconds in addition to hours and minutes. 
+1. `show_year`: whether or not to show the year, in YYYY format, for each timestamp.
+1. `show_date`: whether or not to show the date (in MM-DD format). 
+1. `show_offset`: whether or not to show the time zone offset codes for each time zone.
+1. `horizontal_display`: whether or not to display times horizontally rather than vertically.
 
 #### Settings for versions 2.2.0+
 1. `date_before_month`: whether or not to display dates before months (e.g. 3-4 instead of 4-3 for April 3). 
     Note: if `date_before_month` and `show_year` are both set to true, years will be placed after the month (e.g. 3-4-2025 for April 3, 2025); when `date_before_month` and `show_year` are set to false and true, respectively, years will be shown before the month (e.g. 2025-04-03).
 1. `use_custom_format`: Set to `true` to use your own custom format rather than one created through the `show_seconds`, `show_year`, `show_date`, `show_offset`, and `date_before_month` commands.
-1. `custom_format_code`: The custom format code that you would like to use for displaying times. The default, `{:%Y-%m-%dT%H:%M:%S%z}`, will display times in ISO8601 format (e.g. 2025-11-11T15:11:20-0400). The documentation at https://en.cppreference.com/w/cpp/chrono/zoned_time/formatter.html will be a helpful resource when specifying new format codes.
+1. `custom_format_code`: The custom format code that you would like to use for displaying times. For instance, the code `{:%Y-%m-%dT%H:%M:%S%z}`, will display times in ISO8601 format (e.g. 2025-11-11T15:11:20-0400). The documentation at https://en.cppreference.com/w/cpp/chrono/zoned_time/formatter.html will be a helpful resource when specifying new format codes.
 
 
 ### Examples
