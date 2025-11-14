@@ -186,7 +186,7 @@ Here are examples of what the program will look like when different .csv files i
 
 ## Compilation instructions
 
-To compile the program, you can use CMake with the included CMakeLists.txt file. Simply create a build folder within your project's root folder; navigate to that folder within your terminal; and run:
+To compile the program, you can use CMake with the included CMakeLists.txt file. Simply create a 'build' folder within your project's root folder; navigate to the 'build' folder within your terminal; and run:
 
 `cmake ..`
 
@@ -200,7 +200,7 @@ The Clang command is almost identical:
 
 `clang++ cpp_world_clock.cpp -std=c++20 -o build/cwc25`
 
-(Note: the code expects the executable to be located in a /build subfolder and **not** the project's root folder.)
+(Note: the program will only run correctly if the executable is stored in a /build subfolder and **not** the project's root folder.)
 
 As noted earlier, I was not able to compile this program on MacOS, as the compiler on the laptop I was using didn't appear to support the `zoned_time()` function.
     
