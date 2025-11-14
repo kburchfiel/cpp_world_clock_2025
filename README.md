@@ -154,7 +154,7 @@ Here are the following configuration settings that you can specify, along with t
 1. `custom_format_code`: The custom format code that you would like to use for displaying times. For instance, the code `{:%Y-%m-%dT%H:%M:%S%z}`, will display times in ISO8601 format (e.g. 2025-11-11T15:11:20-0400). The documentation at https://en.cppreference.com/w/cpp/chrono/zoned_time/formatter.html will be a helpful resource when specifying new format codes.
 
 #### Settings for versions 2.4.0+
-1. `debug`: Set to `true` to show the number of microseconds required to render each set of times. This is more of an informational setting than a true debug option, but it can be an interesting benchmark nonetheless. (For instance, I found that times took around 4x longer to render on Windows than on Linux, even though I used the same laptop (via a dual-boot setup) for each trial.) 
+1. `debug`: Set to `true` to show the number of microseconds required to render each set of times. This is more of an informational setting than a true debug option, but it can be an interesting benchmark nonetheless. (For instance, I found that times took around 4x longer to render on my Windows setup than on my Linux setup, even though I used the same laptop (via a dual-boot setup) for each trial. Your results may vary, though!) 
 
 ### Examples
 
