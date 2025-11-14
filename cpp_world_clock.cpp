@@ -1,5 +1,5 @@
 /* C++ World Clock: 2025 Edition
-Version 2.1.0
+Version 2.4.0
 By Ken Burchfiel
 Released under the MIT License
 */
@@ -11,27 +11,26 @@ Released under the MIT License
 #include <map>
 #include <sstream>
 #include <string>
+#include <string_view>
 #include <thread>
 #include <vector>
-
 
 // Storing ANSI escape codes for a set of colors:
 // (I retrieved these codes from
 // https://github.com/agauniyal/rang/blob/master/include/rang.hpp . ).
 // The rang repository is released under the Unlicense.
 // For the use of 'bright' to differentiate the final eight colors
-// from the first eight, see: 
+// from the first eight, see:
 // https://github.com/agauniyal/rang/tree/master
-std::map<std::string,std::string> ansi_color_codes{
-  {"black","30"},{"red","31"}, 
-  {"green","32"}, {"yellow","33"},
-  {"blue","34"},{"magenta","35"},
-  {"cyan","36"},{"gray","37"},
-  {"bright black", "90"}, {"bright red", "91"},
-{"bright green", "92"}, {"bright yellow", "93"},
- {"bright blue", "94"}, {"bright magenta", "95"},
-{"bright cyan", "96"}, {"bright gray", "97"}};
-
+std::map<std::string, std::string> ansi_color_codes{
+    {"black", "30"},        {"red", "31"},
+    {"green", "32"},        {"yellow", "33"},
+    {"blue", "34"},         {"magenta", "35"},
+    {"cyan", "36"},         {"gray", "37"},
+    {"bright black", "90"}, {"bright red", "91"},
+    {"bright green", "92"}, {"bright yellow", "93"},
+    {"bright blue", "94"},  {"bright magenta", "95"},
+    {"bright cyan", "96"},  {"bright gray", "97"}};
 
 std::map<std::string, std::string> csv_to_map(std::string csv_file_path) {
 
@@ -171,12 +170,25 @@ get_tz_time(const std::string &tz_string,
   }
 
   // Determining how to show dates and time zones:
-  // The following line was based on
+  // The following line, now commented out, was based on
   // https://en.cppreference.com/w/cpp/chrono/zoned_time/formatter.html
   // and https://en.cppreference.com/w/cpp/utility/format/runtime_format.html .
 
+  // return (time_color +
+  //         std::format(std::runtime_format(format_string), tz_time));
+
+  // I replaced the previous line with the following because
+  // the latter is compatible with C++20, whereas the previous line
+  // requires C++26.
+  // This approach is based on
+  // https://en.cppreference.com/w/cpp/utility/format/make_format_args.html
+  // and
+  // https://en.cppreference.com/w/cpp/utility/format/format.html .
+  // Note that there's no need to explicitly convert format_string
+  // into a std::string::view .
+
   return (time_color +
-          std::format(std::runtime_format(format_string), tz_time));
+          std::vformat(format_string, std::make_format_args(tz_time)));
 }
 
 void print_tzs(const std::vector<std::vector<std::string>> &tz_vec,
@@ -208,7 +220,16 @@ void print_tzs(const std::vector<std::vector<std::string>> &tz_vec,
   // This approach *should* reduce the likelihood that the
   // terminal's cursor will 'flicker' from quickly printing
   // out time zones line by line.
-  std::string tz_display = "";
+  
+  // \033 allows us to pass ANSI escape sequences to the terminal,
+  // thus letting us control colors, line/display clearing, and
+  // cursor position. 
+
+  // 1;1H returns the cursor to the top left of the terminal so that
+  // we'll be in the right position to display the current set
+  // of times.
+
+  std::string tz_display = "\033[1;1H";
 
   // Specifying separate post-time strings for horizontal and
   // vertical display settings:
@@ -218,25 +239,24 @@ void print_tzs(const std::vector<std::vector<std::string>> &tz_vec,
   // will need to be made here and there as well.)
 
   std::string post_time_string = "\033[0m\033[K\n";
-  // \033 allows us to pass ANSI escape sequences to the terminal,
-  // thus letting us control colors, line/display clearing, and
-  // cursor position. [0m resets colors to their default value,
+  // [0m resets colors to their default value,
   // and [K clears out any lingering additional text to the right
   // of each line. These were based on the ANSI escape code
   // documentation
   // at https://en.wikipedia.org/wiki/ANSI_escape_code .
 
-  std::string tz_display_closure = "\033[J\033[1;1H";
+  std::string tz_display_closure = "\033[J";
   // [J clears out any remaining text in the terminal, which may
   // be helpful following changes to its dimensions.
-  // 1;1H returns the cursor to the top left of the terminal so that
-  // we'll be in the right position to display the next set
-  // of times.
+
 
   if (config_map["horizontal_display"] == "true") {
-    post_time_string = "\033[0m    ";
+    post_time_string = "\033[0m    "; // The extra spaces here will
+    // create some separation between each time. (I found that spaces
+    // were less likely than tabs to allow text from prior time 
+    // displays to continue to appear.)
 
-    tz_display_closure = "\033[K\033[J\n\033[1;1H";
+    tz_display_closure = "\033[K\033[J\n";
   }
 
   // Showing Unix Time (the number of seconds, not including
@@ -247,12 +267,16 @@ void print_tzs(const std::vector<std::vector<std::string>> &tz_vec,
                   "m" + std::to_string(unix_time_s) + post_time_string;
   }
 
+
+  // Adding the user-specified name for each time zone, and its 
+  // and its current time, to tz_display;
   for (const std::vector<std::string> &tz_vec_entry : tz_vec) {
 
     // Specifying which format code to pass to get_tz_time():
 
     std::string tz_time_str =
-        get_tz_time(tz_vec_entry[1], current_time, config_map, format_string);
+        get_tz_time(tz_vec_entry[1], 
+          current_time, config_map, format_string);
 
     std::string entry_name_color =
         "\033[" + config_map["entry_name_color"] + "m";
@@ -262,16 +286,14 @@ void print_tzs(const std::vector<std::vector<std::string>> &tz_vec,
   }
 
   // Clearing out the rest of the screen (which may be necessary
-  // if the window had been resized), then returning to the
-  // top of the terminal:
+  // if the window had been resized):
   tz_display += tz_display_closure;
 
   std::cout << tz_display;
 }
 
 int main() {
-  // Clearing the screen:
-  // (For reference, see https://en.wikipedia.org/wiki/ANSI_escape_code)
+  // Clearing the active display within the terminal:
   std::cout << "\033[1;1H";
   std::cout << "\033[J";
 
@@ -301,33 +323,37 @@ int main() {
   std::vector<std::vector<std::string>> tz_vec =
       csv_to_vector("../config/" + config_file_map["tz_list"]);
 
-  // Determining the ANSI escape codes that correspond to the 
+  // Determining the ANSI escape codes that correspond to the
   // display colors specified by the user:
   // Note: the escape code map only contains 16 standard colors;
   // however, the user may have chosen to submit other valid colors
   // also. Therefore, if a given color entry isn't found in
   // the dictionary, the script will assume it's a separate
-  // ANSI escape code and thus pass it on, unconverted, to the 
+  // ANSI escape code and thus pass it on, unconverted, to the
   // main while() loop.
 
   std::vector<std::string> color_variables = {
-    "entry_name_color", "daytime_color", "nighttime_color",
-    "unix_time_name_color", "unix_time_color"};
+      "entry_name_color", "daytime_color", "nighttime_color",
+      "unix_time_name_color", "unix_time_color"};
 
-    for (auto color_variable: color_variables)
+  for (auto color_variable : color_variables) {
+    if (ansi_color_codes.contains(config_map[color_variable]))
+    // Replacing the color name with its corresponding color
+    // code:
     {
-      if (ansi_color_codes.contains(
-        config_map[color_variable]))
-        // Replacing the color name with its corresponding color 
-        // code:
-        {config_map[color_variable] = ansi_color_codes[
-          config_map[color_variable]];}
-      }
+      config_map[color_variable] = ansi_color_codes[config_map[color_variable]];
+    }
+  }
 
   // Determining whether or not to show Unix time:
   bool show_unix_time = true;
   if (config_map["show_unix_time"] != "true") {
     show_unix_time = false;
+  }
+
+  bool debug = false;
+  if (config_map["debug"] == "true") {
+    debug = true;
   }
 
   // Specifying, based on the show_seconds, show_year, show_date,
@@ -387,7 +413,7 @@ int main() {
       {
         if (config_map["show_year"] == "true") {
           format_string += " (%F)";
-        }    // %F is short for YYYY-MM-DD.
+        } // %F is short for YYYY-MM-DD.
         else // The year won't get displayed.
         {
           {
@@ -435,26 +461,20 @@ int main() {
                            std::chrono::system_clock::now()) +
                        std::chrono::seconds(1);
     std::this_thread::sleep_until(next_second);
-    // The following timing code, which I've since commented out,
-    // allowed me to check how long it took to render a new set of
-    // times.
-    // It took around 1200 microseconds (e.g. 1.2ms), on average,
-    // for the script to render around 32 times; around 800-900
-    // microseconds for it to render roughly 25 times;
-    // and around 300-400 microseconds for it to render 10 different
-    // times.
-    // These times might be substantially slower or faster on your
-    // own machine.
-
-    // auto start_time = std::chrono::high_resolution_clock::now();
+    // The following timing code, which will only display if
+    // debug is set to true, allows users to see how long it takes
+    // to render a new set of times.
+    auto start_time = std::chrono::high_resolution_clock::now();
     print_tzs(tz_vec, config_map, format_string);
-    // auto end_time = std::chrono::high_resolution_clock::now();
-    // auto run_time = std::chrono::duration_cast<
-    // std::chrono::microseconds>(end_time - start_time).count();
-    // std::cout << "Render time: " << run_time
-    // << " microseconds\t";
+    if (debug == true)
+      {auto end_time = std::chrono::high_resolution_clock::now();
+      auto run_time = std::chrono::duration_cast<
+    std::chrono::microseconds>(end_time - start_time).count();
+    std::cout << "Render time: " << run_time
+    << " microseconds\n";
+      }
     // The previous runtime calculation is based on p. 587 of
     // Programming: Principles and Practice Using C++ (3rd Edition)
-    // by Bjarne Stroustrup.
+    // by Bjarne Stroustrup.}
   }
 }

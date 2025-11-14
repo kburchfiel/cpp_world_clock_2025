@@ -7,8 +7,8 @@ Released under the MIT License
 *Note: This program, like all of my other programs, was created \*without\* the use of generative AI tools.*
 
 **Latest versions:**
-* **Linux**: 2.3.0
-* **Windows**: 2.0.0
+* **Linux**: 2.4.0
+* **Windows**: 2.4.0
 
 ![](Images/default_output.png)
 
@@ -23,7 +23,7 @@ The source code makes extensive use of [ANSI escape codes](https://en.wikipedia.
 
 1. If you'd like to download an executable for Windows or Linux, you can do so on Itch.io at https://kburchfiel.itch.io/console-world-clock. alternatively, you can compile the program yourself (see instructions below). 
 
-    [Note: I encountered issues with compiling this program for MacOS, as the `zoned_time` function wasn't recognized by the laptop's version of Clang/G++. Also, the Windows executable offers fewer features than the Linux executable, as the latter makes use of a C++26 function (`runtime_format()` that doesn't yet appear to be supported by MSVC. Once MSVC does support `runtime_format`, I should be able to create a Version 2.2.0 release for Windows as well.]
+    [Note: I encountered issues with compiling this program for MacOS, as the `zoned_time` function wasn't recognized by the laptop's version of Clang/G++. I hope to eventually release a MacOS version, but it may not come out for a while.]
 
 2. Navigate to the build/ folder within your terminal, then launch the executable. On Linux, you can do so via the following command line entries: 
 
@@ -32,6 +32,8 @@ cd /home/your_username/Downloads/cpp_world_clock_2025/build
 ./cwc25
 ```
 
+**Note**: If you try to launch the program from another folder, it likely won't work correctly, as it uses relative paths to locate certain configuration files. (More on these files below.)
+
 On Windows, you would use the following steps:
 
 ```
@@ -39,7 +41,7 @@ cd C:\\Users\your_username\Downloads\cpp_world_clock_2025\build
 cwc25.exe
 ```
 
-**Note**: If you try to launch the program from another folder, it likely won't work correctly, as it uses relative paths to locate certain configuration files. (More on these files below.)
+(You should also be able to double-click the executable on Windows instead of navigating to the build folder.)
 
 (Make sure to replace the path to the program folder with your own path as needed.)
 
@@ -110,6 +112,8 @@ of the CSV file containing the program's default settings (config_list_default.c
 
 2. For boolean (yes/no) entries, enter `true` for yes and `false` for no--not True, FALSE, 'true', "false", etc.
 
+    **Warning:** Certain spreadsheet editors might try to 'help' you by changing 'false' to FALSE and 'true' to TRUE. However, since the program expects these codes to be lowercase, this will cause issues when running CWC. You can bypass this issue by using a text or code editor (like Notepad or VSCodium) instead.
+
 3. Make sure not to add any spaces before or after configuration variables or values--or the commas that separate them. (For example, you can enter `entry_name_color,37`, but *not* `entry_name_color, 37`.)
 
 Here are the following configuration settings that you can specify, along with their values in config_list_default.csv:
@@ -149,6 +153,8 @@ Here are the following configuration settings that you can specify, along with t
 1. `use_custom_format`: Set to `true` to use your own custom format rather than one created through the `show_seconds`, `show_year`, `show_date`, `show_offset`, and `date_before_month` commands.
 1. `custom_format_code`: The custom format code that you would like to use for displaying times. For instance, the code `{:%Y-%m-%dT%H:%M:%S%z}`, will display times in ISO8601 format (e.g. 2025-11-11T15:11:20-0400). The documentation at https://en.cppreference.com/w/cpp/chrono/zoned_time/formatter.html will be a helpful resource when specifying new format codes.
 
+#### Settings for versions 2.4.0+
+1. `debug`: Set to `true` to show the number of microseconds required to render each set of times. This is more of an informational setting than a true debug option, but it can be an interesting benchmark nonetheless. (For instance, I found that times took around 4x longer to render on Windows than on Linux, even though I used the same laptop (via a dual-boot setup) for each trial.) 
 
 ### Examples
 
@@ -180,21 +186,21 @@ Here are examples of what the program will look like when different .csv files i
 
 ## Compilation instructions
 
-### Linux
-
-To compile the source code, simply navigate to the project's build/ folder within your terminal and run gpp_build_script.sh, which will create an executable version of cpp_world_clock.cpp using g++ with the C++26 standard (which is needed for the `runtime_format()` function to work).
-
-(Notes: 
-
-1. The code expects the executable to be located in a /build subfolder and **not** the project's root folder.
-2. The Linux-specific CMakeLists.txt code isn't working properly; therefore, you should only use that file when compiling the program for Windows (see below).
-
-### Windows
-You can use CMake with the included CMakeLists.txt file to compile the source code for Windows. Simply create a build folder within your project's root folder (if one isn't already present); navigate to that folder within your terminal; and run:
+To compile the program, you can use CMake with the included CMakeLists.txt file. Simply create a build folder within your project's root folder; navigate to that folder within your terminal; and run:
 
 `cmake ..`
 
 `cmake --build .` (Don't forget the period at the end!)
+
+Alternatively, you can also try to create an executable within the command line using a compiler of your choice. For instance, to compile the program with g++ on Linux, navigate to the project's root folder, make a build directory, and then run: 
+
+`g++ cpp_world_clock.cpp -std=c++20 -o build/cwc25`
+
+The Clang command is almost identical:
+
+`clang++ cpp_world_clock.cpp -std=c++20 -o build/cwc25`
+
+(Note: the code expects the executable to be located in a /build subfolder and **not** the project's root folder.)
 
 As noted earlier, I was not able to compile this program on MacOS, as the compiler on the laptop I was using didn't appear to support the `zoned_time()` function.
     
