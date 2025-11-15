@@ -203,7 +203,14 @@ The Clang command is almost identical:
 (Note: the program will only run correctly if the executable is stored in a /build subfolder and **not** the project's root folder.)
 
 As noted earlier, I was not able to compile this program on MacOS, as the compiler on the laptop I was using didn't appear to support the `zoned_time()` function.
-    
+
+## Troubleshooting notes
+
+* In order for this program to function correctly, the time zone database on your computer needs to be up to date. (For instance, I saw that the program had been showing an incorrect time for Almaty; this was likely because (1) Almaty discontinued daylight savings time in 2024, and (2) this change hadn't yet been reflected within the local copy of my Windows time zone database.)
+
+* If you're encountering another issue or notice a potential bug, feel free to leave a comment on the GitHub repository's Issues page, available at https://github.com/kburchfiel/cpp_world_clock_2025/issues .
+
+
 ## Special thanks
 
 Special thanks to Howard Hinnant for his hard work on C++'s chrono library--and for his thorough StackOverflow answers, without which I wouldn't have been able to get the project to its current state!
